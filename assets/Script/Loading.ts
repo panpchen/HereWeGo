@@ -1,5 +1,4 @@
 import { Constants } from "./Config/Constants";
-import { Utils } from "./Utils";
 
 const { ccclass, property } = cc._decorator;
 
