@@ -98,9 +98,9 @@ export default class LevelSelect extends LevelBase {
       this._topicId = 0;
       this.overPanel.active = true;
       this.bubble.scaleX = this._lastPlayerId == 0 ? 1 : -1;
-      const playerData = Constants.getPlayerById(this._lastPlayerId);
-      this.bubbleLabel.string = `“${playerData.name}还没到，我等等他，他会选择什么方式到公园呢？”`;
-      this.btnLabel.string = `揭晓${playerData.name}出行方式`;
+      const otherPlayerData = Constants.getPlayerById(this._lastPlayerId == 0 ? 1 : 0);
+      this.bubbleLabel.string = Utils.stringFormat(Constants.allGameString.str0, otherPlayerData.name);
+      this.btnLabel.string = Utils.stringFormat(Constants.allGameString.str1, otherPlayerData.name);
       return;
     }
     this._topicId++;

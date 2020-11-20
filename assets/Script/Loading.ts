@@ -1,5 +1,3 @@
-import { Utils } from "./Utils";
-
 const { ccclass, property } = cc._decorator;
 
 @ccclass

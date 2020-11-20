@@ -108,4 +108,12 @@ export class Utils {
         }
         return obj
     }
+
+    static stringFormat(str, ...args) {
+        for (let i = 0; i < args.length; i++) {
+            let id = `{${i}}`;
+            str = str.replace(id, args[i]);
+        }
+        return str;
+    }
 }

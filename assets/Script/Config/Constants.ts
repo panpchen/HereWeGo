@@ -74,6 +74,18 @@ const PlayersConfig = [
         isArrive: false
     }
 ]
+
+enum allGameString {
+    /**
+     * `“{0}还没到，我等等他，他会选择什么方式到公园呢？”`
+     */
+    str0 = `“{0}还没到，我等等他，他会选择什么方式到公园呢？”`,
+    /**
+     * `揭晓{0}出行方式`,
+     */
+    str1 = `揭晓{0}出行方式`,
+}
+
 export class Constants {
     // 请求评估统计给后台在游戏结束时
     static AssessStatisticsJson: string;
@@ -93,5 +105,7 @@ export class Constants {
     static getPlayerById(id) {
         return PlayersConfig[id];
     }
+
+    static allGameString = allGameString;
 }
 

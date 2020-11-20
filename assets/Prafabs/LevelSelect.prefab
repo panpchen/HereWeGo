@@ -2646,7 +2646,7 @@
     "component": "",
     "_componentId": "0cdbadNbIhGPq3v6qzASoMp",
     "handler": "onClickEvent",
-    "customEventData": "1"
+    "customEventData": "2"
   },
   {
     "__type__": "cc.PrefabInfo",
@@ -3952,8 +3952,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "“小朋还没到，我等等他，他会选择什么方式到公园呢？”",
-    "_N$string": "“小朋还没到，我等等他，他会选择什么方式到公园呢？”",
+    "_string": "",
+    "_N$string": "",
     "_fontSize": 50,
     "_lineHeight": 72,
     "_enableWrapText": true,
