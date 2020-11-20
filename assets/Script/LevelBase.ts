@@ -9,7 +9,7 @@ const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class LevelBase extends cc.Component {
-    init() { }
+    init(data?) { }
 
     onBaseClickEvent(event, parm) {
         switch (parm) {

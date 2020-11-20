@@ -1,0 +1,36 @@
+{
+  "ver": "2.3.5",
+  "uuid": "cf10b19c-2601-4da3-b617-63baec5c2d90",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 95,
+  "height": 310,
+  "platformSettings": {},
+  "subMetas": {
+    "停车标识牌": {
+      "ver": "1.0.4",
+      "uuid": "50fd3deb-18b3-4637-81bc-633335d2a224",
+      "rawTextureUuid": "cf10b19c-2601-4da3-b617-63baec5c2d90",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 95,
+      "height": 310,
+      "rawWidth": 95,
+      "rawHeight": 310,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

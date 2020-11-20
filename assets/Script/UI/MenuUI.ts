@@ -12,30 +12,31 @@ const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class MenuUI extends BaseUI {
-    @property(cc.Node)
-    btnGroup: cc.Node = null;
+  @property(cc.Node)
+  btnGroup: cc.Node = null;
 
-    start() {
-        this.btnGroup.pauseSystemEvents(true);
-        const duration = this.ani.getAnimationState("menuUI").duration;
-        this.scheduleOnce(() => {
-            this._tweenBtn();
-            this.btnGroup.resumeSystemEvents(true);
-        }, duration);
-    }
+  start() {
+    this.btnGroup.pauseSystemEvents(true);
+    const duration = this.ani.getAnimationState("menuUI").duration;
+    this.scheduleOnce(() => {
+      this._tweenBtn();
+      this.btnGroup.resumeSystemEvents(true);
+    }, duration);
+  }
 
-    _tweenBtn() {
-        cc.tween(this.btnGroup)
-            .repeatForever(
-                cc.tween()
-                    .to(0.2, { scale: 1.1 })
-                    .to(0.2, { scale: 1 })
-            ).start();
+  _tweenBtn() {
+    cc.tween(this.btnGroup)
+      .repeatForever(
+        cc.tween()
+          .to(0.2, { scale: 1.1 })
+          .to(0.2, { scale: 1 })
+      ).start();
 
-    }
+  }
 
-    clickGameStart() {
-        UIManager.instance.hideAll();
-        cc.director.emit("gameStart");
-    }
+  clickGameStart() {
+    UIManager.instance.showUI(UIType.SelectUI, null, () => {
+      this.hide();
+    });
+  }
 }

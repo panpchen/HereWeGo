@@ -1,0 +1,139 @@
+{
+  "__type__": "cc.AnimationClip",
+  "_name": "answerUI",
+  "_objFlags": 0,
+  "_native": "",
+  "_duration": 1.94,
+  "sample": 50,
+  "speed": 1,
+  "wrapMode": 1,
+  "curveData": {
+    "paths": {
+      "win/hand": {
+        "comps": {},
+        "props": {
+          "y": [
+            {
+              "frame": 0,
+              "value": 362.038
+            },
+            {
+              "frame": 0.2,
+              "value": -51.364
+            },
+            {
+              "frame": 0.26,
+              "value": 0
+            }
+          ],
+          "opacity": [
+            {
+              "frame": 0,
+              "value": 0
+            },
+            {
+              "frame": 0.2,
+              "value": 255
+            }
+          ],
+          "scaleX": [
+            {
+              "frame": 0,
+              "value": 0.5
+            },
+            {
+              "frame": 0.2,
+              "value": 1
+            }
+          ],
+          "active": [
+            {
+              "frame": 0,
+              "value": true
+            },
+            {
+              "frame": 0.98,
+              "value": false
+            }
+          ]
+        }
+      },
+      "win/bigStar": {
+        "comps": {},
+        "props": {
+          "active": [
+            {
+              "frame": 0,
+              "value": false
+            },
+            {
+              "frame": 0.98,
+              "value": true
+            }
+          ],
+          "scale": [
+            {
+              "frame": 0.98,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "frame": 1.1,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 1.5,
+                "y": 1.5
+              }
+            },
+            {
+              "frame": 1.2,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "frame": 1.52,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "frame": 1.94,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 0.1,
+                "y": 0.1
+              }
+            }
+          ],
+          "position": [
+            {
+              "frame": 1.52,
+              "value": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "frame": 1.94,
+              "value": [
+                362.999,
+                603.318,
+                0
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "events": []
+}

@@ -10,7 +10,9 @@ import BaseUI from "./UI/BaseUI";
 const { ccclass, property } = cc._decorator;
 export const enum UIType {
   MenuUI = "MenuUI",
+  SelectUI = "SelectUI",
   ResultUI = "ResultUI",
+  AnswerUI = "AnswerUI",
 }
 
 @ccclass
@@ -21,6 +23,8 @@ export class UIManager extends cc.Component {
 
   @property(cc.Node)
   allUI: cc.Node[] = [];
+  @property(cc.Node)
+  fadeMask: cc.Node = null;
 
   onLoad() {
     UIManager.instance = this;
@@ -36,18 +40,34 @@ export class UIManager extends cc.Component {
     this.showUI(UIType.MenuUI);
   }
 
-  showUI(type: UIType, data?) {
+  showUI(type: UIType, data?: any, cb?: Function) {
     if (this._allPanel.size == 0) {
       return;
     }
-    const panel = this._allPanel.get(type);
-    panel.show(data);
+    const panel: BaseUI = this._allPanel.get(type);
+    this.fadeMask.opacity = 0;
+
+    if (type == UIType.MenuUI
+      || type == UIType.AnswerUI) {
+      panel.show(data);
+      return;
+    }
+
+    cc.tween(this.fadeMask)
+      .to(0.45, { opacity: 255 }, { easing: "fade" })
+      .call(() => {
+        panel.show(data);
+        cb && cb();
+      })
+      .to(0.15, { opacity: 0 }, { easing: "fade" })
+      .start();
   }
 
   hideUI(type: UIType) {
     if (this._allPanel.size == 0) {
       return;
     }
+    this.fadeMask.opacity = 0;
     const panel = this._allPanel.get(type);
     panel.hide();
   }
@@ -57,6 +77,7 @@ export class UIManager extends cc.Component {
       return;
     }
 
+    this.fadeMask.opacity = 0;
     this._allPanel.forEach((value, key) => {
       value.hide();
     });

@@ -14,8 +14,6 @@ const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class ResultUI extends BaseUI {
-  @property(cc.Label)
-  timeLabel: cc.Label = null;
   @property(cc.Node)
   titleNode: cc.Node = null;
 
@@ -26,9 +24,7 @@ export default class ResultUI extends BaseUI {
           .to(1.5, { angle: -5 })
           .to(1.5, { angle: 5 })
       ).start();
-    this.timeLabel.string = `${data["gameTime"]}`;
     SendMsg.reqSaveAssessStatistics(Constants.AssessStatisticsJson);
-
   }
 
   clickAgainGame() {

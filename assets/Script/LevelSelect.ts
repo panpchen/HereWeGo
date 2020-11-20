@@ -5,158 +5,169 @@
 // Learn life-cycle callbacks:
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
-import { PicTopicConfig } from "./Config/PicTopicConfig";
-import Game from "./Game";
+import { Constants } from "./Config/Constants";
 import LevelBase from "./LevelBase";
 import { UIManager, UIType } from "./UIManager";
+import { Utils } from "./Utils";
 
 const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class LevelSelect extends LevelBase {
-  @property(cc.Prefab)
-  bg_prefabs: cc.Prefab[] = [];
-  @property(cc.Node)
-  bgParent: cc.Node = null;
-  @property(cc.Node)
-  optionList: cc.Node[] = [];
+  @property(cc.SpriteFrame)
+  listBgSpf: cc.SpriteFrame[] = [];
+  @property(cc.Sprite)
+  bgSp: cc.Sprite = null;
   @property(cc.Label)
   titleLabel: cc.Label = null;
   @property(cc.Node)
-  tip: cc.Node = null;
+  titleNode: cc.Node = null;
+  @property(cc.Node)
+  listOption: cc.Node[] = [];
+  @property(cc.SpriteFrame)
+  listOptionSpf: cc.SpriteFrame[] = [];
   @property(cc.Label)
   timeLabel: cc.Label = null;
   @property(cc.Node)
-  titleNode: cc.Node = null;
+  overPanel: cc.Node = null;
+  @property(cc.Node)
+  bubble: cc.Node = null;
+  @property(cc.Node)
+  playerList: cc.Node[] = [];
+  @property(cc.Label)
+  bubbleLabel: cc.Label = null;
+  @property(cc.Label)
+  btnLabel: cc.Label = null;
 
-  private _gameTime: number = 0;
-  private _totalTime: number = 0;
-  private _curPicId = 0;
-  private get curPicId() {
-    return this._curPicId;
-  }
-  private set curPicId(v) {
-    this._curPicId = v;
-    if (this._curPicId > this._totalRightNum - 1) {
-      this._curPicId = this._totalRightNum - 1;
-    }
-    if (this._curPicId < 0) {
-      this._curPicId = 0;
-    }
-  }
+  private _topicId = 0;
   private _topicData = null;
-  private _totalRightNum = PicTopicConfig.getConfigLength();;
-  private _curAnswerNum = 0;
-  private _bgList: Map<number, cc.Node> = new Map();
-  private _isTweenOver: boolean = false;
+  private _optionBtnList: cc.Button[] = [];
+  private _selectOptions: number[] = [];
+  private _countDownNum = 3;
+  private _lastPlayerId: number = -1;
+  private _isTimeOut: boolean = false;
 
-  init() {
-    super.init();
-    this._topicData = null;
-    this.tip.opacity = 0;
-    this.curPicId = 0;
-    this._gameTime = 0;
-    this._totalTime = 0;
-    this._bgList.forEach(bg => {
-      bg.active = false;
-    });
-    this._loadPic();
+  onLoad() {
+    cc.director.on("gameNextLevel", this._newLevel, this);
   }
 
-  _loadPic() {
-    this._topicData = PicTopicConfig.getConfigById(this.curPicId);
+  init(playerId?: number) {
+    super.init();
+    this._topicId = 0;
+    this._lastPlayerId = playerId;
+    this._topicData = null;
+    this._loadTopic();
+  }
+
+  _loadTopic() {
+    this._selectOptions = [];
+    this.timeLabel.node.active = false;
+    this._isTimeOut = false;
+    this._topicData = Constants.getConfigById(this._lastPlayerId)[this._topicId];
     this.titleLabel.string = this._topicData.title;
-    this.optionList.forEach((option, index) => {
-      option.getChildByName("label").getComponent(cc.Label).string = this._topicData.options[index];
+    this.listOption.forEach((option, i) => {
+      this.listOption[i].active = i == this._topicId;
+    });
+    this._optionBtnList = this.listOption[this._topicId].getComponentsInChildren(cc.Button);
+    this._optionBtnList.forEach((btn, i) => {
+      btn.node.getComponent(cc.Sprite).spriteFrame = this.listOptionSpf[1];
+      // btn.node.getChildByName("label").getComponent(cc.Label).string = this._topicData.options[i];
     });
 
-    let bg: cc.Node = null;
-    if (!this._bgList.has(this._curPicId)) {
-      bg = cc.instantiate(this.bg_prefabs[this._curPicId]);
-      bg.name = `bg${this._curPicId}`;
-      this._bgList.set(this._curPicId, bg);
-      bg.parent = this.bgParent;
-    } else {
-      bg = this._bgList.get(this._curPicId);
-      bg.active = true;
-    }
-    this._gameTime = 0;
-    this.timeLabel.string = `计时：00:00`;
-    bg.opacity = 0;
-    cc.tween(bg)
+    this.bgSp.spriteFrame = this.listBgSpf[this._topicData.bgId];
+    this.bgSp.node.opacity = 0;
+    cc.tween(this.bgSp.node)
       .to(0.5, { opacity: 255 })
       .start();
 
-    this._isTweenOver = false;
     this.titleNode.y = 756;
-    this.optionList[0].x = -600;
-    this.optionList[1].x = 600;
-
     cc.tween(this.titleNode)
       .to(1, { y: 445 }, { easing: "elasticInOut" })
-      .call(() => {
-        this._isTweenOver = true;
-        this.schedule(this._countDown, 1, cc.macro.REPEAT_FOREVER, 0.1);
-      })
       .start();
-    cc.tween(this.optionList[0])
-      .to(1.5, { x: -207 }, { easing: "elasticInOut" })
-      .start();
-    cc.tween(this.optionList[1])
-      .to(1.5, { x: 207 }, { easing: "elasticInOut" })
-      .start();
+    this.overPanel.active = false;
   }
 
-  _countDown() {
-    this.timeLabel.string = `计时：${Game.instance.countDownFormat(++this._gameTime)}`;
-    ++this._totalTime;
-  }
-
-  _showTip() {
-    this.tip.opacity = 255;
-    cc.Tween.stopAllByTarget(this.tip);
-    cc.tween(this.tip)
-      .delay(1)
-      .to(0.2, { opacity: 0 })
-      .start()
-  }
-
-  _loadNextPic() {
-    if (this._totalRightNum != 0 && this._curAnswerNum == this._totalRightNum) {
-      this._curAnswerNum = 0;
-      this.scheduleOnce(() => {
-        UIManager.instance.showUI(UIType.ResultUI, { gameTime: this._totalTime });
-      }, 0.3);
+  _loadNextTopic() {
+    // if (true) {
+    //   this.scheduleOnce(() => {
+    //     UIManager.instance.showUI(UIType.ResultUI);
+    //   }, 0.3);
+    //   return;
+    // }
+    if (this._topicId >= Constants.getConfigLength(this._lastPlayerId) - 1) {
+      this._topicId = 0;
+      this.overPanel.active = true;
+      this.bubble.scaleX = this._lastPlayerId == 0 ? 1 : -1;
+      const playerData = Constants.getPlayerById(this._lastPlayerId);
+      this.bubbleLabel.string = `“${playerData.name}还没到，我等等他，他会选择什么方式到公园呢？”`;
+      this.btnLabel.string = `揭晓${playerData.name}出行方式`;
       return;
     }
-
-    this.curPicId++;
-    this._loadPic();
+    this._topicId++;
+    this._loadTopic();
   }
 
   onClickEvent(event, parm) {
-    if (!this._isTweenOver) {
+    if (this._isTimeOut) {
       return;
     }
 
-    let isRight = this._topicData.answer == Number(parm);
-    if (!isRight) {
-      this._showTip();
+    if (parm == "nextPlayer") {
+      cc.error("next player");
+      return;
     }
 
-    const btn = event.target.getComponent(cc.Button);
-    btn.interactable = false;
-    if (isRight) {
-      this.unschedule(this._countDown);
-      this.scheduleOnce(() => {
-        this._loadNextPic();
-        btn.interactable = true;
-      }, 0.5);
-      this._curAnswerNum++;
-    } else {
-      this.scheduleOnce(() => {
-        btn.interactable = true;
-      }, 0.3);
+    for (let i = 0; i < this._optionBtnList.length; i++) {
+      const name = this._optionBtnList[i].node.name;
+      // 节点名称btn_0, btn_1，去最后数字判断点击哪个按钮
+      if (name.substring(name.length - 1) == parm) {
+        const n = Number(parm)
+        let sp = this._optionBtnList[i].node.getComponent(cc.Sprite).spriteFrame;
+        // 按钮变红，灰逻辑
+        if (sp.name == this.listOptionSpf[0].name) {
+          this._optionBtnList[i].node.getComponent(cc.Sprite).spriteFrame = this.listOptionSpf[1];   // gray
+          const delIndex = this._selectOptions.indexOf(n);
+          if (delIndex !== -1) {
+            this._selectOptions.splice(delIndex, 1);
+          }
+        } else {
+          this._optionBtnList[i].node.getComponent(cc.Sprite).spriteFrame = this.listOptionSpf[0];   // red
+          if (!this._selectOptions.includes(n)) {
+            this._selectOptions.push(n);
+          }
+        }
+        break;
+      }
     }
+
+    // 计时器
+    if (this._selectOptions.length > 0) {
+      if (cc.director.getScheduler().isScheduled(this._countDown, this)) {
+        return;
+      }
+      this.timeLabel.node.active = true;
+      this._countDownNum = 3;
+      this.timeLabel.string = `${this._countDownNum}`;
+      this.schedule(this._countDown, 1, 3, 0.01);
+    } else {
+      this.unschedule(this._countDown);
+      this.timeLabel.node.active = false;
+    }
+  }
+
+  _newLevel() {
+    this._loadNextTopic();
+  }
+
+  _countDown() {
+    if (this._countDownNum < 1) {
+      this.unschedule(this._countDown);
+      this._isTimeOut = true;
+      const isCorrect = Utils.isEqualsArray(this._selectOptions, this._topicData.answers);
+      UIManager.instance.showUI(UIType.AnswerUI, isCorrect);
+      return;
+    }
+    this.timeLabel.string = `${this._countDownNum}`;
+    this._countDownNum--;
   }
 }

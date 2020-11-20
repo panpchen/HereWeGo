@@ -1,0 +1,36 @@
+{
+  "ver": "2.3.5",
+  "uuid": "17d62f89-1141-438a-88df-c70cc9da2aee",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 300,
+  "height": 236,
+  "platformSettings": {},
+  "subMetas": {
+    "拉客车": {
+      "ver": "1.0.4",
+      "uuid": "ced64cf9-d61a-42db-9577-ce21cfa5a838",
+      "rawTextureUuid": "17d62f89-1141-438a-88df-c70cc9da2aee",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 300,
+      "height": 236,
+      "rawWidth": 300,
+      "rawHeight": 236,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

@@ -84,7 +84,7 @@ export class Utils {
     }
 
     // 两个数组是否相同 只对数字
-    static isEqualsArray(arr, arr2) {
+    static isEqualsArray(arr: Array<number>, arr2: Array<number>) {
         return JSON.stringify(arr.sort()) === JSON.stringify(arr2.sort());
     }
 
