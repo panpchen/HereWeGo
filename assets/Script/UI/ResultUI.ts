@@ -6,6 +6,7 @@
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
 import { Constants } from "../Config/Constants";
+import Game from "../Game";
 import { SendMsg } from "../Net/SendMsg";
 import { UIManager, UIType } from "../UIManager";
 import BaseUI from "./BaseUI";
@@ -18,7 +19,9 @@ export default class ResultUI extends BaseUI {
   titleNode: cc.Node = null;
 
   init(data) {
+    this.titleNode.angle = 0;
     cc.tween(this.titleNode)
+      .delay(1)
       .repeatForever(
         cc.tween()
           .to(1.5, { angle: -5 })
@@ -27,8 +30,9 @@ export default class ResultUI extends BaseUI {
     SendMsg.reqSaveAssessStatistics(Constants.AssessStatisticsJson);
   }
 
-  clickAgainGame() {
-    UIManager.instance.hideAll();
-    cc.director.emit("gameStart");
+  clickBackGame() {
+    this.hide();
+    Game.instance.reset();
+    UIManager.instance.showUI(UIType.MenuUI);
   }
 }

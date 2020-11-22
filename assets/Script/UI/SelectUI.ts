@@ -29,7 +29,9 @@ export default class SelectUI extends BaseUI {
     this._gameInstance = Game.instance;
     this.contentList[0].active = true;
     this.contentList[1].active = false;
-    this.manList.forEach(man => {
+    this.manList.forEach((man, index) => {
+      man.setPosition(cc.v2(index === 0 ? -152 : 152, -228));
+      man.scale = 1;
       man.active = true;
     });
     this.btnList.forEach((btn, index) => {

@@ -6,6 +6,7 @@
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
 import { Constants } from "./Config/Constants";
+import Game from "./Game";
 import LevelBase from "./LevelBase";
 import { UIManager, UIType } from "./UIManager";
 import { Utils } from "./Utils";
@@ -31,6 +32,8 @@ export default class LevelSelect extends LevelBase {
   @property(cc.Node)
   overPanel: cc.Node = null;
   @property(cc.Node)
+  allOverPanel: cc.Node = null;
+  @property(cc.Node)
   bubble: cc.Node = null;
   @property(cc.Node)
   playerList: cc.Node[] = [];
@@ -45,30 +48,29 @@ export default class LevelSelect extends LevelBase {
   private _selectOptions: number[] = [];
   private _countDownNum = 3;
   private _lastPlayerId: number = -1;
-  private _isTimeOut: boolean = false;
 
   onLoad() {
     cc.director.on("gameNextLevel", this._newLevel, this);
   }
 
   init(playerId?: number) {
-    super.init();
     this._topicId = 0;
-    this._lastPlayerId = playerId;
     this._topicData = null;
+    this._lastPlayerId = playerId;
+    this.overPanel.active = false;
+    this.allOverPanel.active = false;
     this._loadTopic();
   }
 
   _loadTopic() {
     this._selectOptions = [];
     this.timeLabel.node.active = false;
-    this._isTimeOut = false;
     this._topicData = Constants.getConfigById(this._lastPlayerId)[this._topicId];
     this.titleLabel.string = this._topicData.title;
     this.listOption.forEach((option, i) => {
-      this.listOption[i].active = i == this._topicId;
+      this.listOption[i].active = i == this._topicData.optionId;
     });
-    this._optionBtnList = this.listOption[this._topicId].getComponentsInChildren(cc.Button);
+    this._optionBtnList = this.listOption[this._topicData.optionId].getComponentsInChildren(cc.Button);
     this._optionBtnList.forEach((btn, i) => {
       btn.node.getComponent(cc.Sprite).spriteFrame = this.listOptionSpf[1];
       // btn.node.getChildByName("label").getComponent(cc.Label).string = this._topicData.options[i];
@@ -82,38 +84,42 @@ export default class LevelSelect extends LevelBase {
 
     this.titleNode.y = 756;
     cc.tween(this.titleNode)
-      .to(1, { y: 445 }, { easing: "elasticInOut" })
+      .to(1, { y: 472 }, { easing: "elasticInOut" })
       .start();
-    this.overPanel.active = false;
   }
 
   _loadNextTopic() {
-    // if (true) {
-    //   this.scheduleOnce(() => {
-    //     UIManager.instance.showUI(UIType.ResultUI);
-    //   }, 0.3);
-    //   return;
-    // }
-    if (this._topicId >= Constants.getConfigLength(this._lastPlayerId) - 1) {
-      this._topicId = 0;
-      this.overPanel.active = true;
-      this.bubble.scaleX = this._lastPlayerId == 0 ? 1 : -1;
-      const otherPlayerData = Constants.getPlayerById(this._lastPlayerId == 0 ? 1 : 0);
-      this.bubbleLabel.string = Utils.stringFormat(Constants.allGameString.str0, otherPlayerData.name);
-      this.btnLabel.string = Utils.stringFormat(Constants.allGameString.str1, otherPlayerData.name);
+    if (this._topicId === Constants.getConfigLength(this._lastPlayerId) - 1) {
+      if (Game.instance.lastSelectPlayerIdList.length === 1) {
+        this._topicId = 0;
+        this.overPanel.active = true;
+        this.bubble.scaleX = this._lastPlayerId == 0 ? 1 : -1;
+        const otherPlayerData = Constants.getPlayerById(this._getOtherPlayerId());
+        this.bubbleLabel.string = Utils.stringFormat(Constants.allGameString.str0, otherPlayerData.name);
+        this.btnLabel.string = Utils.stringFormat(Constants.allGameString.str1, otherPlayerData.name);
+        this.playerList.forEach((player, index) => {
+          player.active = index == this._lastPlayerId;
+        });
+      } else if (Game.instance.lastSelectPlayerIdList.length === 2) {
+        this.allOverPanel.active = true;
+        this.scheduleOnce(() => {
+          UIManager.instance.showUI(UIType.ResultUI);
+        }, 1.5);
+      }
       return;
     }
     this._topicId++;
     this._loadTopic();
   }
 
-  onClickEvent(event, parm) {
-    if (this._isTimeOut) {
-      return;
-    }
+  _getOtherPlayerId() {
+    return this._lastPlayerId == 0 ? 1 : 0;
+  }
 
+  onClickEvent(event, parm) {
     if (parm == "nextPlayer") {
-      cc.error("next player");
+      UIManager.instance.showUI(UIType.SelectUI);
+      // this.init(this._getOtherPlayerId());
       return;
     }
 
@@ -123,7 +129,7 @@ export default class LevelSelect extends LevelBase {
       if (name.substring(name.length - 1) == parm) {
         const n = Number(parm)
         let sp = this._optionBtnList[i].node.getComponent(cc.Sprite).spriteFrame;
-        // 按钮变红，灰逻辑
+        // 按钮变红和灰的逻辑
         if (sp.name == this.listOptionSpf[0].name) {
           this._optionBtnList[i].node.getComponent(cc.Sprite).spriteFrame = this.listOptionSpf[1];   // gray
           const delIndex = this._selectOptions.indexOf(n);
@@ -145,10 +151,10 @@ export default class LevelSelect extends LevelBase {
       if (cc.director.getScheduler().isScheduled(this._countDown, this)) {
         return;
       }
-      this.timeLabel.node.active = true;
       this._countDownNum = 3;
       this.timeLabel.string = `${this._countDownNum}`;
       this.schedule(this._countDown, 1, 3, 0.01);
+      this.timeLabel.node.active = true;
     } else {
       this.unschedule(this._countDown);
       this.timeLabel.node.active = false;
@@ -162,7 +168,7 @@ export default class LevelSelect extends LevelBase {
   _countDown() {
     if (this._countDownNum < 1) {
       this.unschedule(this._countDown);
-      this._isTimeOut = true;
+      this.timeLabel.node.active = false;
       const isCorrect = Utils.isEqualsArray(this._selectOptions, this._topicData.answers);
       UIManager.instance.showUI(UIType.AnswerUI, isCorrect);
       return;

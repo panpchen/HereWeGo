@@ -32,4 +32,8 @@ export default class Game extends cc.Component {
     }
     this._level.init(playerId);
   }
+
+  reset() {
+    this.lastSelectPlayerIdList = [];
+  }
 }

@@ -14,49 +14,56 @@ const TopicConfigs = {
         title: "小明要到马路对面，小明该走哪条路线呢？",
         // options: ["A", "B"],
         answers: [0],
-        bgId: 0
+        bgId: 0,
+        optionId: 0
     },
     {
         id: 1,
         title: "信号灯是哪种状态时，小明可以过斑马线？",
         // options: ["A", "B", "C"],
         answers: [0],
-        bgId: 0
+        bgId: 0,
+        optionId: 1
     },
     {
         id: 2,
         title: "公园就在马路对面了，小明可以选择哪条路线过马路？",
         // options: ["A", "B"],
         answers: [1],
-        bgId: 1
+        bgId: 1,
+        optionId: 2
     }],
     "1": [{
         id: 0,
         title: "马路边停车两辆车，小朋选择乘坐哪辆车去公园？",
         // options: ["A", "B"],
         answers: [1],
-        bgId: 2
+        bgId: 2,
+        optionId: 3
     },
     {
         id: 1,
         title: "小朋应该选择坐在哪个位置？",
         // options: ["A", "B", "C"],
         answers: [1, 2],
-        bgId: 3
+        bgId: 3,
+        optionId: 4
     },
     {
         id: 2,
         title: "在车内时，哪种行为小朋可以做的？",
         // options: ["A", "B", "C"],
         answers: [0],
-        bgId: 3
+        bgId: 3,
+        optionId: 5
     },
     {
         id: 3,
         title: "到公园了，小朋可以从那边下车？",
         // options: ["A", "B"],
         answers: [1],
-        bgId: 4
+        bgId: 4,
+        optionId: 6
     }]
 }
 
