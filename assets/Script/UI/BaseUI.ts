@@ -15,12 +15,12 @@ export default class BaseUI extends cc.Component {
     this.ani = this.node.getComponent(cc.Animation);
   }
 
-  init(data: any = null) {
+  init(args: any[]) {
   }
 
-  show(data: any) {
-    this.init(data);
+  show(args: any[]) {
     this.node.active = true;
+    this.init(args);
     this.playAni();
   }
 

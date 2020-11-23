@@ -16,57 +16,49 @@ const { ccclass, property } = cc._decorator;
 export default class SelectUI extends BaseUI {
   @property(cc.Node)
   contentList: cc.Node[] = [];
-  @property(cc.Node)
-  manList: cc.Node[] = [];
   @property(cc.Label)
-  titleLabel: cc.Label = null;
-  @property(cc.Button)
-  btnList: cc.Button[] = [];
+  bubbleLabels: cc.Label[] = [];
 
   private _gameInstance: Game = null;
 
   init() {
     this._gameInstance = Game.instance;
-    this.contentList[0].active = true;
-    this.contentList[1].active = false;
-    this.manList.forEach((man, index) => {
-      man.setPosition(cc.v2(index === 0 ? -152 : 152, -228));
-      man.scale = 1;
-      man.active = true;
-    });
-    this.btnList.forEach((btn, index) => {
-      if (Game.instance.lastSelectPlayerIdList.includes(index)) {
-        btn.interactable = false;
-      } else {
-        btn.interactable = true;
+    this.showConetentByIndex(-1);
+  }
+
+  showConetentByIndex(index: number) {
+    if (index === -1) {
+      this.contentList[0].active = false;
+      this.contentList[1].active = false;
+      return;
+    }
+
+    const playerData = Constants.getPlayerById(index);
+    if (playerData) {
+      Game.instance.lastSelectPlayerIdList.push(index);
+
+      for (let i = 0; i < this.bubbleLabels.length; i++) {
+        if (i === index) {
+          this.bubbleLabels[i].string = playerData.info;
+          break;
+        }
       }
-    });
+    }
+
+    this.contentList[0].active = index === 0;
+    this.contentList[1].active = index === 1;
   }
 
   onClickEvent(evt, parm) {
     if (parm === "go") {
       UIManager.instance.hideAll();
+
       const lastSelectPlayerId = this._gameInstance.lastSelectPlayerIdList[this._gameInstance.lastSelectPlayerIdList.length - 1];
       cc.director.emit("gameStart", lastSelectPlayerId);
     } else if (parm === "0" || parm === "1") {
-      const index = Number(parm);
-      const playerData = Constants.getPlayerById(index);
-      Game.instance.lastSelectPlayerIdList.push(index);
       evt.target.getComponent(cc.Button).interactable = false;
-      this.titleLabel.string = playerData.info;
-      this.contentList[0].active = false;
-      this.manList.forEach((man, id) => {
-        man.active = false;
-        if (index == id) {
-          man.active = true;
-          cc.tween(man)
-            .to(0.7, { scale: 1.2, position: cc.v3(-137, -90) })
-            .call(() => {
-              this.contentList[1].active = true;
-            })
-            .start()
-        }
-      })
+
+      this.showConetentByIndex(Number(parm));
     }
   }
 }

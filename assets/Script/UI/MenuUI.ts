@@ -35,7 +35,7 @@ export default class MenuUI extends BaseUI {
   }
 
   clickGameStart() {
-    UIManager.instance.showUI(UIType.SelectUI, null, () => {
+    UIManager.instance.showUI(UIType.SelectUI, () => {
       this.hide();
     });
   }

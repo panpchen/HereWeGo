@@ -17,8 +17,25 @@ const { ccclass, property } = cc._decorator;
 export default class ResultUI extends BaseUI {
   @property(cc.Node)
   titleNode: cc.Node = null;
+  @property(cc.RichText)
+  starNumLabel: cc.RichText = null;
+  @property(cc.Node)
+  starNode: cc.Node = null;
+
+  private _starList: cc.Node[] = [];
 
   init(data) {
+    for (let i = this._starList.length - 1; i >= 0; i--) {
+      this._starList[i].destroy();
+      this._starList.splice(i, 1);
+    }
+
+    const starListLength = Game.instance.level.starList.length;
+    this.starNumLabel.string = `<color=#333333>你获得了<color=#DA6700><size=50>${starListLength}</size></c>颗星的奖励</color>`;
+    for (let i = 0; i < starListLength; i++) {
+      this._showStar();
+    }
+
     this.titleNode.angle = 0;
     cc.tween(this.titleNode)
       .delay(1)
@@ -27,7 +44,17 @@ export default class ResultUI extends BaseUI {
           .to(1.5, { angle: -5 })
           .to(1.5, { angle: 5 })
       ).start();
+
     SendMsg.reqSaveAssessStatistics(Constants.AssessStatisticsJson);
+  }
+
+  _showStar() {
+    if (this.starNode) {
+      const star = cc.instantiate(this.starNode);
+      star.parent = this.starNode.parent;
+      this._starList.push(star);
+      star.active = true;
+    }
   }
 
   clickBackGame() {

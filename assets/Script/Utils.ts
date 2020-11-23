@@ -109,7 +109,7 @@ export class Utils {
         return obj
     }
 
-    static stringFormat(str, ...args) {
+    static stringFormat(str: string, ...args: any[]) {
         for (let i = 0; i < args.length; i++) {
             let id = `{${i}}`;
             str = str.replace(id, args[i]);

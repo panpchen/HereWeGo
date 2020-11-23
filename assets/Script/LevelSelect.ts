@@ -8,6 +8,7 @@
 import { Constants } from "./Config/Constants";
 import Game from "./Game";
 import LevelBase from "./LevelBase";
+import SelectUI from "./UI/SelectUI";
 import { UIManager, UIType } from "./UIManager";
 import { Utils } from "./Utils";
 
@@ -27,8 +28,6 @@ export default class LevelSelect extends LevelBase {
   listOption: cc.Node[] = [];
   @property(cc.SpriteFrame)
   listOptionSpf: cc.SpriteFrame[] = [];
-  @property(cc.Label)
-  timeLabel: cc.Label = null;
   @property(cc.Node)
   overPanel: cc.Node = null;
   @property(cc.Node)
@@ -41,13 +40,18 @@ export default class LevelSelect extends LevelBase {
   bubbleLabel: cc.Label = null;
   @property(cc.Label)
   btnLabel: cc.Label = null;
+  @property(cc.Node)
+  topStarNode: cc.Node = null;
 
   private _topicId = 0;
   private _topicData = null;
   private _optionBtnList: cc.Button[] = [];
-  private _selectOptions: number[] = [];
-  private _countDownNum = 3;
   private _lastPlayerId: number = -1;
+  private _haveWrong: boolean = false;
+  private _starList: cc.Node[] = [];
+  public get starList() {
+    return this._starList;
+  }
 
   onLoad() {
     cc.director.on("gameNextLevel", this._newLevel, this);
@@ -63,8 +67,6 @@ export default class LevelSelect extends LevelBase {
   }
 
   _loadTopic() {
-    this._selectOptions = [];
-    this.timeLabel.node.active = false;
     this._topicData = Constants.getConfigById(this._lastPlayerId)[this._topicId];
     this.titleLabel.string = this._topicData.title;
     this.listOption.forEach((option, i) => {
@@ -72,7 +74,7 @@ export default class LevelSelect extends LevelBase {
     });
     this._optionBtnList = this.listOption[this._topicData.optionId].getComponentsInChildren(cc.Button);
     this._optionBtnList.forEach((btn, i) => {
-      btn.node.getComponent(cc.Sprite).spriteFrame = this.listOptionSpf[1];
+      btn.node.getComponent(cc.Sprite).spriteFrame = this.listOptionSpf[0];
       // btn.node.getChildByName("label").getComponent(cc.Label).string = this._topicData.options[i];
     });
 
@@ -86,6 +88,8 @@ export default class LevelSelect extends LevelBase {
     cc.tween(this.titleNode)
       .to(1, { y: 472 }, { easing: "elasticInOut" })
       .start();
+
+    this._haveWrong = false;
   }
 
   _loadNextTopic() {
@@ -118,8 +122,9 @@ export default class LevelSelect extends LevelBase {
 
   onClickEvent(event, parm) {
     if (parm == "nextPlayer") {
-      UIManager.instance.showUI(UIType.SelectUI);
-      // this.init(this._getOtherPlayerId());
+      UIManager.instance.showUI(UIType.SelectUI, (baseLevel: SelectUI) => {
+        baseLevel.showConetentByIndex(this._getOtherPlayerId());
+      });
       return;
     }
 
@@ -127,53 +132,45 @@ export default class LevelSelect extends LevelBase {
       const name = this._optionBtnList[i].node.name;
       // 节点名称btn_0, btn_1，去最后数字判断点击哪个按钮
       if (name.substring(name.length - 1) == parm) {
-        const n = Number(parm)
         let sp = this._optionBtnList[i].node.getComponent(cc.Sprite).spriteFrame;
         // 按钮变红和灰的逻辑
-        if (sp.name == this.listOptionSpf[0].name) {
-          this._optionBtnList[i].node.getComponent(cc.Sprite).spriteFrame = this.listOptionSpf[1];   // gray
-          const delIndex = this._selectOptions.indexOf(n);
-          if (delIndex !== -1) {
-            this._selectOptions.splice(delIndex, 1);
-          }
-        } else {
-          this._optionBtnList[i].node.getComponent(cc.Sprite).spriteFrame = this.listOptionSpf[0];   // red
-          if (!this._selectOptions.includes(n)) {
-            this._selectOptions.push(n);
-          }
+        // if (sp.name == this.listOptionSpf[0].name) {
+        //   this._optionBtnList[i].node.getComponent(cc.Sprite).spriteFrame = this.listOptionSpf[1];   // gray
+        // } else {
+        //   this._optionBtnList[i].node.getComponent(cc.Sprite).spriteFrame = this.listOptionSpf[0];   // red
+        // }
+
+        const isCorrect = this._topicData.answers.includes(Number(parm));
+        if (!this._haveWrong) {
+          this._haveWrong = !isCorrect;
         }
+        this.scheduleOnce(() => {
+          UIManager.instance.showUI(UIType.AnswerUI, null, isCorrect, this._haveWrong);
+        }, 0.3);
+
         break;
       }
     }
-
-    // 计时器
-    if (this._selectOptions.length > 0) {
-      if (cc.director.getScheduler().isScheduled(this._countDown, this)) {
-        return;
-      }
-      this._countDownNum = 3;
-      this.timeLabel.string = `${this._countDownNum}`;
-      this.schedule(this._countDown, 1, 3, 0.01);
-      this.timeLabel.node.active = true;
-    } else {
-      this.unschedule(this._countDown);
-      this.timeLabel.node.active = false;
-    }
   }
 
-  _newLevel() {
+  _newLevel(isShowAni) {
+    isShowAni && this._showStar();
     this._loadNextTopic();
   }
 
-  _countDown() {
-    if (this._countDownNum < 1) {
-      this.unschedule(this._countDown);
-      this.timeLabel.node.active = false;
-      const isCorrect = Utils.isEqualsArray(this._selectOptions, this._topicData.answers);
-      UIManager.instance.showUI(UIType.AnswerUI, isCorrect);
-      return;
+  _showStar() {
+    if (this.topStarNode) {
+      const star = cc.instantiate(this.topStarNode);
+      star.parent = this.topStarNode.parent;
+      this._starList.push(star);
+      star.active = true;
     }
-    this.timeLabel.string = `${this._countDownNum}`;
-    this._countDownNum--;
+  }
+
+  reset() {
+    for (let i = this._starList.length - 1; i >= 0; i--) {
+      this._starList[i].destroy();
+      this._starList.splice(i, 1);
+    }
   }
 }

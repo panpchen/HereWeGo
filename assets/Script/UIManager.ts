@@ -40,7 +40,7 @@ export class UIManager extends cc.Component {
     this.showUI(UIType.MenuUI);
   }
 
-  showUI(type: UIType, data?: any, cb?: Function) {
+  showUI(type: UIType, cb?: Function, ...args: any[]) {
     if (this._allPanel.size == 0) {
       return;
     }
@@ -49,15 +49,16 @@ export class UIManager extends cc.Component {
 
     if (type == UIType.MenuUI
       || type == UIType.AnswerUI) {
-      panel.show(data);
+      panel.show(args);
+      cb && cb(panel);
       return;
     }
 
     cc.tween(this.fadeMask)
       .to(0.45, { opacity: 255 }, { easing: "fade" })
       .call(() => {
-        panel.show(data);
-        cb && cb();
+        panel.show(args);
+        cb && cb(panel);
       })
       .to(0.15, { opacity: 0 }, { easing: "fade" })
       .start();

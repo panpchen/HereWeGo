@@ -3,7 +3,7 @@
   "_name": "resultAni",
   "_objFlags": 0,
   "_native": "",
-  "_duration": 1.2,
+  "_duration": 0.6,
   "sample": 20,
   "speed": 2,
   "wrapMode": 1,
@@ -14,40 +14,19 @@
           "y": [
             {
               "frame": 0,
-              "value": -695.336
+              "value": -707.192
             },
             {
               "frame": 0.6,
-              "value": -475
+              "value": -490
             }
           ]
         }
       },
-      "title": {
+      "subBg/title": {
+        "comps": {},
         "props": {
           "y": []
-        }
-      },
-      "bubble": {
-        "props": {
-          "scale": [
-            {
-              "frame": 0.6,
-              "value": {
-                "__type__": "cc.Vec2",
-                "x": 0,
-                "y": 0
-              }
-            },
-            {
-              "frame": 1.2,
-              "value": {
-                "__type__": "cc.Vec2",
-                "x": 1,
-                "y": 1
-              }
-            }
-          ]
         }
       }
     }

@@ -9,56 +9,7 @@
   "wrapMode": 1,
   "curveData": {
     "paths": {
-      "win/hand": {
-        "comps": {},
-        "props": {
-          "y": [
-            {
-              "frame": 0,
-              "value": 362.038
-            },
-            {
-              "frame": 0.2,
-              "value": -51.364
-            },
-            {
-              "frame": 0.26,
-              "value": 0
-            }
-          ],
-          "opacity": [
-            {
-              "frame": 0,
-              "value": 0
-            },
-            {
-              "frame": 0.2,
-              "value": 255
-            }
-          ],
-          "scaleX": [
-            {
-              "frame": 0,
-              "value": 0.5
-            },
-            {
-              "frame": 0.2,
-              "value": 1
-            }
-          ],
-          "active": [
-            {
-              "frame": 0,
-              "value": true
-            },
-            {
-              "frame": 0.98,
-              "value": false
-            }
-          ]
-        }
-      },
-      "win/bigStar": {
+      "bigStar": {
         "comps": {},
         "props": {
           "active": [
@@ -129,6 +80,55 @@
                 603.318,
                 0
               ]
+            }
+          ]
+        }
+      },
+      "hand": {
+        "comps": {},
+        "props": {
+          "y": [
+            {
+              "frame": 0,
+              "value": 362.038
+            },
+            {
+              "frame": 0.2,
+              "value": -51.364
+            },
+            {
+              "frame": 0.26,
+              "value": 0
+            }
+          ],
+          "opacity": [
+            {
+              "frame": 0,
+              "value": 0
+            },
+            {
+              "frame": 0.2,
+              "value": 255
+            }
+          ],
+          "scaleX": [
+            {
+              "frame": 0,
+              "value": 0.5
+            },
+            {
+              "frame": 0.2,
+              "value": 1
+            }
+          ],
+          "active": [
+            {
+              "frame": 0,
+              "value": true
+            },
+            {
+              "frame": 0.98,
+              "value": false
             }
           ]
         }

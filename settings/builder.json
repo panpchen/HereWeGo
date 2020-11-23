@@ -7,8 +7,8 @@
     "upsideDown": true
   },
   "packageName": "org.cocos2d.helloworld",
-  "startScene": "1e6ef5e5-17fe-409e-90ee-0f1b4a8c8030",
-  "title": "AntiCrowding",
+  "startScene": "4ed857f1-e9fb-4f15-b44c-6bf3faf3e9e0",
+  "title": "HereWeGo",
   "webOrientation": "portrait",
   "inlineSpriteFrames": true,
   "inlineSpriteFrames_native": true,

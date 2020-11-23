@@ -5,7 +5,7 @@
 // Learn life-cycle callbacks:
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
-import LevelBase from "./LevelBase";
+import LevelSelect from "./LevelSelect";
 
 const { ccclass, property } = cc._decorator;
 
@@ -17,7 +17,10 @@ export default class Game extends cc.Component {
   levelParent: cc.Node = null;
 
   public static instance: Game = null;
-  private _level: LevelBase = null;
+  private _level: LevelSelect = null;
+  public get level() {
+    return this._level;
+  }
   public lastSelectPlayerIdList: number[] = [];
 
   onLoad() {
@@ -27,7 +30,7 @@ export default class Game extends cc.Component {
 
   _startGame(playerId: number) {
     if (!this._level) {
-      this._level = cc.instantiate(this.levelPrefab).getComponent(LevelBase);
+      this._level = cc.instantiate(this.levelPrefab).getComponent(LevelSelect);
       this._level.node.parent = this.levelParent;
     }
     this._level.init(playerId);
@@ -35,5 +38,6 @@ export default class Game extends cc.Component {
 
   reset() {
     this.lastSelectPlayerIdList = [];
+    this.level.reset();
   }
 }

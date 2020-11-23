@@ -6,40 +6,48 @@
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
 import BaseUI from "./BaseUI";
-import { UIManager, UIType } from "../UIManager";
 
 const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class AnswerUI extends BaseUI {
-  @property(cc.Animation)
-  ani: cc.Animation = null;
   @property(cc.Node)
   win: cc.Node = null;
   @property(cc.Node)
   fail: cc.Node = null;
-
-  private _isCorrect: boolean = false;
+  @property(cc.Animation)
+  winAni: cc.Animation = null;
 
   onLoad() {
-    this.ani.on("finished", this._onFinished, this);
+    this.winAni.on("finished", () => {
+      this._onNextLevel(true);
+    }, this);
   }
 
-  init(isCorrent: boolean) {
-    this._isCorrect = isCorrent;
-    this.win.active = isCorrent;
-    this.fail.active = !isCorrent;
-  }
+  init(args: any[]) {
+    const isCorrect = args[0];
+    const haveWrong = args[1];
 
-  _onFinished() {
-    this.hide();
-    if (this._isCorrect) {
-      cc.director.emit("gameNextLevel");
+    this.win.active = isCorrect;
+    this.fail.active = !isCorrect;
+
+    if (isCorrect) {
+      if (!haveWrong) {
+        this.winAni.play();
+      } else {
+        this._onNextLevel(false);
+      }
+    } else {
+      this.scheduleOnce(() => {
+        this.hide();
+      }, 1);
     }
   }
-  // clickGameStart() {
-  //   UIManager.instance.showUI(UIType.SelectUI, null, () => {
-  //     this.hide();
-  //   });
-  // }
+
+  _onNextLevel(isShowAni: boolean) {
+    this.hide();
+    this.scheduleOnce(() => {
+      cc.director.emit("gameNextLevel", isShowAni);
+    }, 0.3);
+  }
 }
