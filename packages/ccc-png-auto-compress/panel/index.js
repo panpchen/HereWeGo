@@ -13,14 +13,16 @@ Editor.Panel.extend({
       data() {
         return {
           enabled: false,
-          // configSaveDir: 'local',
 
           minQuality: 40,
           maxQuality: 80,
           colors: 256,
           speed: 3,
 
-          isSaving: false,
+          excludeFolders: '',
+          excludeFiles: '',
+
+          isProcessing: false,
         }
       },
 
@@ -30,10 +32,16 @@ Editor.Panel.extend({
          * 保存配置
          */
         saveConfig() {
-          if (this.isSaving) return;
-          this.isSaving = true;
+          if (this.isProcessing) return;
+          this.isProcessing = true;
+
+          const excludeFolders = this.excludeFolders.split(',').map(value => value.trim());
+          const excludeFiles = this.excludeFiles.split(',').map(value => value.trim());
 
           const config = {
+            excludeFolders,
+            excludeFiles,
+
             enabled: this.enabled,
 
             minQuality: this.minQuality,
@@ -42,7 +50,7 @@ Editor.Panel.extend({
             speed: this.speed,
           };
           Editor.Ipc.sendToMain('ccc-png-auto-compress:save-config', config, () => {
-            this.isSaving = false;
+            this.isProcessing = false;
           });
         },
 
@@ -53,7 +61,11 @@ Editor.Panel.extend({
           Editor.Ipc.sendToMain('ccc-png-auto-compress:read-config', (err, config) => {
             if (err || !config) return;
             for (const key in config) {
-              this[key] = config[key];
+              if (Array.isArray(config[key])) {
+                this[key] = config[key].join(',').replace(/,/g, ',\n');
+              } else {
+                this[key] = config[key];
+              }
             }
           });
         }
